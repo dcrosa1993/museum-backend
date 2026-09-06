@@ -1,45 +1,29 @@
-import {
-  ArrayMaxSize,
-  IsArray,
-  IsBoolean,
-  IsEnum,
-  IsOptional,
-  IsString,
-  MaxLength,
-  MinLength,
-} from 'class-validator';
-
-import { ArticleStatus } from '../entities/article.entity.js';
+import { IsString, MaxLength, MinLength } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateArticleDto {
+  @ApiProperty({
+    example: 'Las Parrandas de Remedios',
+    description: 'Título del artículo',
+  })
   @IsString()
   @MinLength(3)
   @MaxLength(200)
   title: string;
 
+  @ApiProperty({
+    example: 'Historia de las tradicionales parrandas de Remedios.',
+    description: 'Contenido del artículo',
+  })
   @IsString()
   @MinLength(1)
   description: string;
 
-  @IsArray()
-  @IsString({ each: true })
-  @ArrayMaxSize(50)
-  images: string[];
-
+  @ApiProperty({
+    example: 'parrandas',
+    description: 'Categoría del artículo',
+  })
   @IsString()
   @MaxLength(100)
   category: string;
-
-  @IsOptional()
-  @IsEnum(ArticleStatus)
-  status?: ArticleStatus;
-
-  @IsOptional()
-  @IsBoolean()
-  favorite?: boolean;
-
-  @IsOptional()
-  @IsString()
-  @MaxLength(150)
-  createdBy?: string;
 }

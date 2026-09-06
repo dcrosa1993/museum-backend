@@ -2,11 +2,19 @@ import { ConfigModule } from '@nestjs/config';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ArticlesModule } from './articles/articles.module.js';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+import { ModerationModule } from './moderation/moderation.module.js';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+    }),
+
+    ServeStaticModule.forRoot({
+      rootPath: join(process.cwd(), 'uploads'),
+      serveRoot: '/uploads',
     }),
 
     TypeOrmModule.forRoot({
@@ -24,6 +32,8 @@ import { ArticlesModule } from './articles/articles.module.js';
     }),
 
     ArticlesModule,
+
+    ModerationModule,
   ],
 })
 export class AppModule {}

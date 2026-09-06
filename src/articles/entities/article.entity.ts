@@ -17,10 +17,15 @@ export class Article {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ length: 200 })
+  @Column({
+    type: 'varchar',
+    length: 200,
+  })
   title: string;
 
-  @Column('text')
+  @Column({
+    type: 'text',
+  })
   description: string;
 
   @Column({
@@ -30,7 +35,10 @@ export class Article {
   })
   images: string[];
 
-  @Column({ length: 100 })
+  @Column({
+    type: 'varchar',
+    length: 100,
+  })
   category: string;
 
   @Column({
@@ -41,6 +49,7 @@ export class Article {
   status: ArticleStatus;
 
   @Column({
+    type: 'boolean',
     default: false,
   })
   favorite: boolean;
@@ -54,6 +63,13 @@ export class Article {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  @Column({
+    type: 'varchar',
+    length: 150,
+    nullable: true,
+  })
+  updatedBy: string | null;
 
   @UpdateDateColumn()
   updatedAt: Date;
