@@ -10,6 +10,7 @@ async function bootstrap() {
     origin: [
       'https://srv17255-225181.vps.etecsa.cu',
       'http://localhost:4200',
+      'http://181.225.255.17:8122'
     ],
     methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
   });
