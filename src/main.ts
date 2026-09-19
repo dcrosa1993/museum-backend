@@ -2,6 +2,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module.js';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -10,7 +11,7 @@ async function bootstrap() {
     origin: [
       'https://srv17255-225181.vps.etecsa.cu',
       'http://localhost:4200',
-      'http://181.225.255.17:8122'
+      'http://181.225.255.17:8122',
     ],
     methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
   });
@@ -27,6 +28,7 @@ async function bootstrap() {
     .setTitle('Virtual Museum API')
     .setDescription('API para el museo virtual comunitario')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

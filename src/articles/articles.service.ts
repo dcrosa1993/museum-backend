@@ -18,6 +18,7 @@ export class ArticlesService {
   async create(
     createArticleDto: CreateArticleDto,
     images: string[],
+    userId: string,
   ): Promise<Article> {
     const article = this.articlesRepository.create({
       ...createArticleDto,
@@ -28,7 +29,9 @@ export class ArticlesService {
 
       favorite: false,
 
-      createdBy: null,
+      createdBy: userId,
+
+      updatedBy: null,
     });
 
     return this.articlesRepository.save(article);
@@ -86,6 +89,7 @@ export class ArticlesService {
   async update(
     id: string,
     updateArticleDto: UpdateArticleDto,
+    userId: string,
     images?: string[],
   ): Promise<Article> {
     const article = await this.findOne(id);
@@ -96,7 +100,7 @@ export class ArticlesService {
       article.images = images;
     }
 
-    article.updatedBy = null;
+    article.updatedBy = userId;
 
     return this.articlesRepository.save(article);
   }

@@ -1,4 +1,11 @@
-import { Controller, Param, Patch } from '@nestjs/common';
+import { Controller, Param, Patch, UseGuards } from '@nestjs/common';
+import { UserRole } from '../users/entities/user.entity.js';
+
+import { Roles } from '../auth/decorators/roles.decorator.js';
+
+import { FirebaseAuthGuard } from '../auth/guards/firebase-auth.guard.js';
+
+import { RolesGuard } from '../auth/guards/roles.guard.js';
 
 import {
   ApiNotFoundResponse,
@@ -13,6 +20,8 @@ import { Article } from '../articles/entities/article.entity.js';
 
 @ApiTags('Moderation')
 @Controller('moderation')
+@UseGuards(FirebaseAuthGuard, RolesGuard)
+@Roles(UserRole.ADMINISTRATOR)
 export class ModerationController {
   constructor(private readonly moderationService: ModerationService) {}
 

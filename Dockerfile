@@ -14,6 +14,15 @@ ENV DB_USER=${DB_USER}
 ARG DB_PASSWORD
 ENV DB_PASSWORD=${DB_PASSWORD}
 
+ARG FIREBASE_PROJECT_ID
+ENV FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}
+ARG FIREBASE_CLIENT_EMAIL
+ENV FIREBASE_CLIENT_EMAIL=${FIREBASE_CLIENT_EMAIL}
+ARG FIREBASE_PRIVATE_KEY
+ENV FIREBASE_PRIVATE_KEY=${FIREBASE_PRIVATE_KEY}
+ARG INITIAL_ADMIN_EMAIL
+ENV INITIAL_ADMIN_EMAIL=${INITIAL_ADMIN_EMAIL}
+
 
 WORKDIR /app
 
@@ -22,6 +31,10 @@ ENV PUPPETEER_SKIP_DOWNLOAD=true
 
 # Copy dependency files
 COPY package*.json ./
+#RUN mkdir -p ./src/config
+#RUN chmod -R 777 ./src/config
+#RUN printf '%s' "$SECRET_FILE" > ./src/config/ats-friendly-resume-87b66-firebase-adminsdk-fbsvc-06c9c943d7.json
+#RUN cat ./src/config/ats-friendly-resume-87b66-firebase-adminsdk-fbsvc-06c9c943d7.json
 
 # Install dependencies
 RUN npm ci

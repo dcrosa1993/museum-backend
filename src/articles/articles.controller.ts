@@ -7,11 +7,13 @@ import {
   Post,
   Query,
   UploadedFiles,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiBody,
   ApiConsumes,
   ApiCreatedResponse,
@@ -35,6 +37,9 @@ import { CreateArticleDto } from './dto/create-article.dto.js';
 import { FindArticlesDto } from './dto/find-articles.dto.js';
 import { Article } from './entities/article.entity.js';
 import { UpdateArticleDto } from './dto/update-article.dto.js';
+import { FirebaseAuthGuard } from '../auth/guards/firebase-auth.guard.js';
+import { User } from '../users/entities/user.entity.js';
+import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
 
 @ApiTags('Articles')
 @Controller('articles')
@@ -42,6 +47,8 @@ export class ArticlesController {
   constructor(private readonly articlesService: ArticlesService) {}
 
   @Post()
+  @UseGuards(FirebaseAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Crear un artículo',
   })
@@ -104,6 +111,7 @@ export class ArticlesController {
   async create(
     @Body() createArticleDto: CreateArticleDto,
     @UploadedFiles() files: Express.Multer.File[],
+    @CurrentUser() user: User,
   ): Promise<Article> {
     const images = (files ?? []).map(
       (file) => `/uploads/articles/${file.filename}`,
@@ -114,6 +122,7 @@ export class ArticlesController {
         ...createArticleDto,
       },
       images,
+      user.id,
     );
   }
 
@@ -154,6 +163,8 @@ export class ArticlesController {
     return this.articlesService.findOne(id);
   }
   @Patch(':id')
+  @UseGuards(FirebaseAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Actualizar un artículo',
     description:
@@ -219,12 +230,13 @@ export class ArticlesController {
     @Param('id') id: string,
     @Body() updateArticleDto: UpdateArticleDto,
     @UploadedFiles() files: Express.Multer.File[],
+    @CurrentUser() user: User,
   ): Promise<Article> {
     const images =
       files && files.length > 0
         ? files.map((file) => `/uploads/articles/${file.filename}`)
         : undefined;
 
-    return this.articlesService.update(id, updateArticleDto, images);
+    return this.articlesService.update(id, updateArticleDto, user.id, images);
   }
 }
