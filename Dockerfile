@@ -19,7 +19,8 @@ ENV FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}
 ARG FIREBASE_CLIENT_EMAIL
 ENV FIREBASE_CLIENT_EMAIL=${FIREBASE_CLIENT_EMAIL}
 ARG FIREBASE_PRIVATE_KEY
-ENV FIREBASE_PRIVATE_KEY=${FIREBASE_PRIVATE_KEY}
+ENV SECRET_FILE=${FIREBASE_PRIVATE_KEY}
+ENV FIREBASE_SERVICE_ACCOUNT_PATH=/app/src/config/firebase-service-account.json
 ARG INITIAL_ADMIN_EMAIL
 ENV INITIAL_ADMIN_EMAIL=${INITIAL_ADMIN_EMAIL}
 
@@ -31,10 +32,10 @@ ENV PUPPETEER_SKIP_DOWNLOAD=true
 
 # Copy dependency files
 COPY package*.json ./
-#RUN mkdir -p ./src/config
-#RUN chmod -R 777 ./src/config
-#RUN printf '%s' "$SECRET_FILE" > ./src/config/ats-friendly-resume-87b66-firebase-adminsdk-fbsvc-06c9c943d7.json
-#RUN cat ./src/config/ats-friendly-resume-87b66-firebase-adminsdk-fbsvc-06c9c943d7.json
+RUN mkdir -p ./src/config
+RUN chmod -R 777 ./src/config
+RUN printf '%s' "$SECRET_FILE" > ./src/config/firebase-service-account.json
+RUN cat ./src/config/firebase-service-account.json
 
 # Install dependencies
 RUN npm ci
