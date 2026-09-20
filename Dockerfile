@@ -67,7 +67,7 @@ ARG FIREBASE_PROJECT_ID
 ENV FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}
 ARG FIREBASE_CLIENT_EMAIL
 ENV FIREBASE_CLIENT_EMAIL=${FIREBASE_CLIENT_EMAIL}
-ENV FIREBASE_SERVICE_ACCOUNT_PATH=/app/src/config/firebase-service-account.json
+ENV FIREBASE_SERVICE_ACCOUNT_PATH=/src/config/firebase-service-account.json
 ARG INITIAL_ADMIN_EMAIL
 ENV INITIAL_ADMIN_EMAIL=${INITIAL_ADMIN_EMAIL}
 
@@ -83,6 +83,7 @@ RUN npm ci --omit=dev
 
 # Copy compiled application
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/src/config/firebase-service-account.json ./src/config/firebase-service-account.json
 
 EXPOSE 3000
 
