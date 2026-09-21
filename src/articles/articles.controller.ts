@@ -40,6 +40,7 @@ import { UpdateArticleDto } from './dto/update-article.dto.js';
 import { FirebaseAuthGuard } from '../auth/guards/firebase-auth.guard.js';
 import { User } from '../users/entities/user.entity.js';
 import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 
 @ApiTags('Articles')
 @Controller('articles')
@@ -47,7 +48,7 @@ export class ArticlesController {
   constructor(private readonly articlesService: ArticlesService) {}
 
   @Post()
-  @UseGuards(FirebaseAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Crear un artículo',
@@ -109,21 +110,16 @@ export class ArticlesController {
     }),
   )
   async create(
-    @Body() createArticleDto: CreateArticleDto,
-    @UploadedFiles() files: Express.Multer.File[],
+    @Body() dto: CreateArticleDto,
+    @UploadedFiles()
+    files: Express.Multer.File[],
     @CurrentUser() user: User,
-  ): Promise<Article> {
+  ) {
     const images = (files ?? []).map(
       (file) => `/uploads/articles/${file.filename}`,
     );
 
-    return this.articlesService.create(
-      {
-        ...createArticleDto,
-      },
-      images,
-      user.id,
-    );
+    return this.articlesService.create(dto, images, user.id);
   }
 
   @Get()
@@ -163,7 +159,7 @@ export class ArticlesController {
     return this.articlesService.findOne(id);
   }
   @Patch(':id')
-  @UseGuards(FirebaseAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Actualizar un artículo',

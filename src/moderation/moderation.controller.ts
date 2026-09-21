@@ -17,10 +17,11 @@ import {
 
 import { ModerationService } from './moderation.service.js';
 import { Article } from '../articles/entities/article.entity.js';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 
 @ApiTags('Moderation')
 @Controller('moderation')
-@UseGuards(FirebaseAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(UserRole.ADMINISTRATOR)
 export class ModerationController {
   constructor(private readonly moderationService: ModerationService) {}

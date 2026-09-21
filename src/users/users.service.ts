@@ -1,10 +1,17 @@
 import { Injectable } from '@nestjs/common';
+
 import { InjectRepository } from '@nestjs/typeorm';
+
 import { Repository } from 'typeorm';
 
 import { User, UserRole } from './entities/user.entity.js';
 
-import { DecodedIdToken } from 'firebase-admin/auth';
+export interface GoogleUserProfile {
+  googleId: string;
+  email: string;
+  displayName: string;
+  photoUrl: string | null;
+}
 
 @Injectable()
 export class UsersService {
@@ -13,46 +20,47 @@ export class UsersService {
     private readonly usersRepository: Repository<User>,
   ) {}
 
-  async findByFirebaseUid(firebaseUid: string): Promise<User | null> {
+  async findByGoogleId(googleId: string): Promise<User | null> {
     return this.usersRepository.findOne({
       where: {
-        firebaseUid,
+        googleId,
       },
     });
   }
 
-  async findOrCreateFromFirebase(token: DecodedIdToken): Promise<User> {
-    let user = await this.findByFirebaseUid(token.uid);
+  async findById(id: string): Promise<User | null> {
+    return this.usersRepository.findOne({
+      where: {
+        id,
+      },
+    });
+  }
+
+  async findOrCreateFromGoogle(profile: GoogleUserProfile): Promise<User> {
+    let user = await this.findByGoogleId(profile.googleId);
 
     if (!user) {
-      const email = token.email ?? '';
+      const initialAdminEmail = process.env.INITIAL_ADMIN_EMAIL;
 
       const isInitialAdmin =
-        !!process.env.INITIAL_ADMIN_EMAIL &&
-        email.toLowerCase() === process.env.INITIAL_ADMIN_EMAIL.toLowerCase();
+        !!initialAdminEmail &&
+        profile.email.toLowerCase() === initialAdminEmail.toLowerCase();
 
       user = this.usersRepository.create({
-        firebaseUid: token.uid,
-
-        email,
-
-        displayName: token.name ?? email,
-
-        photoUrl: token.picture ?? null,
+        googleId: profile.googleId,
+        email: profile.email,
+        displayName: profile.displayName,
+        photoUrl: profile.photoUrl,
 
         role: isInitialAdmin ? UserRole.ADMINISTRATOR : UserRole.COLLABORATOR,
 
         isActive: true,
-
         lastLoginAt: new Date(),
       });
     } else {
-      user.email = token.email ?? user.email;
-
-      user.displayName = token.name ?? user.displayName;
-
-      user.photoUrl = token.picture ?? user.photoUrl;
-
+      user.email = profile.email;
+      user.displayName = profile.displayName;
+      user.photoUrl = profile.photoUrl;
       user.lastLoginAt = new Date();
     }
 

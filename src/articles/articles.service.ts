@@ -16,13 +16,12 @@ export class ArticlesService {
   ) {}
 
   async create(
-    createArticleDto: CreateArticleDto,
+    dto: CreateArticleDto,
     images: string[],
     userId: string,
   ): Promise<Article> {
     const article = this.articlesRepository.create({
-      ...createArticleDto,
-
+      ...dto,
       images,
 
       status: ArticleStatus.PENDING,

@@ -21,7 +21,7 @@ export class User {
     length: 128,
     unique: true,
   })
-  firebaseUid: string;
+  googleId: string;
 
   @Column({
     type: 'varchar',
