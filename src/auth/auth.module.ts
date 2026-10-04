@@ -12,6 +12,7 @@ import { AuthService } from './auth.service.js';
 import { JwtAuthGuard } from './guards/jwt-auth.guard.js';
 
 import { RolesGuard } from './guards/roles.guard.js';
+import { UsersController } from '../users/users.controller.js';
 
 @Module({
   imports: [
@@ -34,7 +35,7 @@ import { RolesGuard } from './guards/roles.guard.js';
     }),
   ],
 
-  controllers: [AuthController],
+  controllers: [AuthController, UsersController],
 
   providers: [AuthService, JwtAuthGuard, RolesGuard],
 

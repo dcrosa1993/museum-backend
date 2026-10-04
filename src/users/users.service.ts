@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -19,6 +19,30 @@ export class UsersService {
         id,
       },
     });
+  }
+
+  async findAll(): Promise<User[]> {
+    return this.usersRepository.find({ order: { createdAt: 'DESC' } });
+  }
+
+  async updateRole(id: string, role: UserRole): Promise<User> {
+    const user = await this.findById(id);
+    if (!user) {
+      throw new NotFoundException(`Usuario con id "${id}" no encontrado`);
+    }
+
+    user.role = role;
+    return this.usersRepository.save(user);
+  }
+
+  async updateActiveStatus(id: string, isActive: boolean): Promise<User> {
+    const user = await this.findById(id);
+    if (!user) {
+      throw new NotFoundException(`Usuario con id "${id}" no encontrado`);
+    }
+
+    user.isActive = isActive;
+    return this.usersRepository.save(user);
   }
 
   async findByEmailForAuthentication(email: string): Promise<User | null> {
