@@ -5,7 +5,6 @@ import { ArticlesModule } from './articles/articles.module.js';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { ModerationModule } from './moderation/moderation.module.js';
-import { FirebaseModule } from './firebase/firebase.module.js';
 import { UsersModule } from './users/users.module.js';
 import { AuthModule } from './auth/auth.module.js';
 
@@ -37,8 +36,6 @@ import { AuthModule } from './auth/auth.module.js';
     ArticlesModule,
 
     ModerationModule,
-
-    FirebaseModule,
 
     UsersModule,
 

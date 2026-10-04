@@ -3,8 +3,6 @@ import { UserRole } from '../users/entities/user.entity.js';
 
 import { Roles } from '../auth/decorators/roles.decorator.js';
 
-import { FirebaseAuthGuard } from '../auth/guards/firebase-auth.guard.js';
-
 import { RolesGuard } from '../auth/guards/roles.guard.js';
 
 import {

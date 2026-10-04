@@ -37,7 +37,6 @@ import { CreateArticleDto } from './dto/create-article.dto.js';
 import { FindArticlesDto } from './dto/find-articles.dto.js';
 import { Article } from './entities/article.entity.js';
 import { UpdateArticleDto } from './dto/update-article.dto.js';
-import { FirebaseAuthGuard } from '../auth/guards/firebase-auth.guard.js';
 import { User } from '../users/entities/user.entity.js';
 import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
