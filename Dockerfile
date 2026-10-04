@@ -59,6 +59,8 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
+RUN mkdir -p /app/uploads/articles
+
 # Copy dependency files
 COPY package*.json ./
 

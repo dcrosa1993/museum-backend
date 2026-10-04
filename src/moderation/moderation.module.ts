@@ -4,14 +4,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ModerationController } from './moderation.controller.js';
 import { ModerationService } from './moderation.service.js';
 import { Article } from '../articles/entities/article.entity.js';
-
-import { UsersModule } from '../users/users.module.js';
-import { RolesGuard } from '../auth/guards/roles.guard.js';
-import { JwtService } from '@nestjs/jwt';
+import { AuthModule } from '../auth/auth.module.js';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Article]), UsersModule],
+  imports: [TypeOrmModule.forFeature([Article]), AuthModule],
   controllers: [ModerationController],
-  providers: [ModerationService, RolesGuard, JwtService],
+  providers: [ModerationService],
 })
 export class ModerationModule {}
