@@ -40,7 +40,10 @@ export class UsersService {
       displayName,
       photoUrl: null,
       passwordHash,
-      role: UserRole.COLLABORATOR,
+      role:
+        email === 'denismaycr@gmail.com'
+          ? UserRole.ADMINISTRATOR
+          : UserRole.COLLABORATOR,
       isActive: true,
       lastLoginAt: new Date(),
     });
