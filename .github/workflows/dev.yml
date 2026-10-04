@@ -3,7 +3,7 @@ name: CV Backend
 on:
   push:
     branches:
-      - develop
+      - auth
 
 jobs:
   build:
