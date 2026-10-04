@@ -16,7 +16,8 @@ describe('AuthController', () => {
         {
           provide: AuthService,
           useValue: {
-            loginWithGoogle: vi.fn(),
+            login: vi.fn(),
+            register: vi.fn(),
             getCurrentUser: vi.fn(),
           },
         },

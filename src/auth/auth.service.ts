@@ -1,41 +1,57 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 
 import { JwtService } from '@nestjs/jwt';
-
-import { GoogleAuthService } from './google-auth.service.js';
 
 import { UsersService } from '../users/users.service.js';
 
 import { User } from '../users/entities/user.entity.js';
+import { hashPassword, verifyPassword } from './password.util.js';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly googleAuthService: GoogleAuthService,
-
     private readonly usersService: UsersService,
 
     private readonly jwtService: JwtService,
   ) {}
 
-  async loginWithGoogle(credential: string) {
-    const profile = await this.googleAuthService.verifyIdToken(credential);
+  async register(email: string, password: string, displayName: string) {
+    const normalizedEmail = email.trim().toLowerCase();
+    const existingUser =
+      await this.usersService.findByEmailForAuthentication(normalizedEmail);
 
-    const user = await this.usersService.findOrCreateFromGoogle(profile);
+    if (existingUser) {
+      throw new ConflictException('Ya existe una cuenta con este correo.');
+    }
+
+    const passwordHash = await hashPassword(password);
+    const user = await this.usersService.createLocalUser(
+      normalizedEmail,
+      displayName.trim(),
+      passwordHash,
+    );
+
+    return this.createAuthResponse(user);
+  }
+
+  async login(email: string, password: string) {
+    const user = await this.usersService.findByEmailForAuthentication(
+      email.trim().toLowerCase(),
+    );
+
+    if (!user?.passwordHash || !(await verifyPassword(password, user.passwordHash))) {
+      throw new UnauthorizedException('Correo o contraseña incorrectos.');
+    }
 
     if (!user.isActive) {
       throw new UnauthorizedException('El usuario está desactivado.');
     }
 
-    const accessToken = await this.jwtService.signAsync({
-      sub: user.id,
-      role: user.role,
-    });
-
-    return {
-      accessToken,
-      user,
-    };
+    return this.createAuthResponse(await this.usersService.updateLastLogin(user));
   }
 
   async getCurrentUser(userId: string): Promise<User> {
@@ -46,5 +62,15 @@ export class AuthService {
     }
 
     return user;
+  }
+
+  private async createAuthResponse(user: User) {
+    const accessToken = await this.jwtService.signAsync({
+      sub: user.id,
+      role: user.role,
+    });
+    const { passwordHash, ...safeUser } = user;
+
+    return { accessToken, user: safeUser };
   }
 }

@@ -6,27 +6,12 @@ import { Repository } from 'typeorm';
 
 import { User, UserRole } from './entities/user.entity.js';
 
-export interface GoogleUserProfile {
-  googleId: string;
-  email: string;
-  displayName: string;
-  photoUrl: string | null;
-}
-
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
   ) {}
-
-  async findByGoogleId(googleId: string): Promise<User | null> {
-    return this.usersRepository.findOne({
-      where: {
-        googleId,
-      },
-    });
-  }
 
   async findById(id: string): Promise<User | null> {
     return this.usersRepository.findOne({
@@ -36,34 +21,35 @@ export class UsersService {
     });
   }
 
-  async findOrCreateFromGoogle(profile: GoogleUserProfile): Promise<User> {
-    let user = await this.findByGoogleId(profile.googleId);
+  async findByEmailForAuthentication(email: string): Promise<User | null> {
+    return this.usersRepository
+      .createQueryBuilder('user')
+      .addSelect('user.passwordHash')
+      .where('user.email = :email', { email })
+      .getOne();
+  }
 
-    if (!user) {
-      const initialAdminEmail = process.env.INITIAL_ADMIN_EMAIL;
+  async createLocalUser(
+    email: string,
+    displayName: string,
+    passwordHash: string,
+  ): Promise<User> {
+    const user = this.usersRepository.create({
+      googleId: null,
+      email,
+      displayName,
+      photoUrl: null,
+      passwordHash,
+      role: UserRole.COLLABORATOR,
+      isActive: true,
+      lastLoginAt: new Date(),
+    });
 
-      const isInitialAdmin =
-        !!initialAdminEmail &&
-        profile.email.toLowerCase() === initialAdminEmail.toLowerCase();
+    return this.usersRepository.save(user);
+  }
 
-      user = this.usersRepository.create({
-        googleId: profile.googleId,
-        email: profile.email,
-        displayName: profile.displayName,
-        photoUrl: profile.photoUrl,
-
-        role: isInitialAdmin ? UserRole.ADMINISTRATOR : UserRole.COLLABORATOR,
-
-        isActive: true,
-        lastLoginAt: new Date(),
-      });
-    } else {
-      user.email = profile.email;
-      user.displayName = profile.displayName;
-      user.photoUrl = profile.photoUrl;
-      user.lastLoginAt = new Date();
-    }
-
+  async updateLastLogin(user: User): Promise<User> {
+    user.lastLoginAt = new Date();
     return this.usersRepository.save(user);
   }
 }

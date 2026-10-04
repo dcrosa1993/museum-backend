@@ -9,10 +9,11 @@ async function bootstrap() {
 
   app.enableCors({
     origin: [
+      process.env.FRONTEND_URL,
       'https://srv17255-225181.vps.etecsa.cu',
       'http://localhost:4200',
       'http://181.225.255.17:8122',
-    ],
+    ].filter((origin): origin is string => Boolean(origin)),
     methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
   });
 

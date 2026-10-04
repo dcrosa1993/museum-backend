@@ -20,8 +20,17 @@ export class User {
     type: 'varchar',
     length: 128,
     unique: true,
+    nullable: true,
   })
-  googleId: string;
+  googleId: string | null;
+
+  @Column({
+    type: 'varchar',
+    length: 256,
+    nullable: true,
+    select: false,
+  })
+  passwordHash: string | null;
 
   @Column({
     type: 'varchar',
