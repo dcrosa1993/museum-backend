@@ -6,11 +6,12 @@ import { ArticlesService } from './articles.service.js';
 import { Article } from './entities/article.entity.js';
 
 import { UsersModule } from '../users/users.module.js';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Article]), UsersModule],
   controllers: [ArticlesController],
-  providers: [ArticlesService],
+  providers: [ArticlesService, JwtService],
   exports: [ArticlesService],
 })
 export class ArticlesModule {}
